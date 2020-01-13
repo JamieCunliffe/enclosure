@@ -19,7 +19,7 @@
 
 ;;; Code:
 
-(defvar enclosure--chars
+(defvar enclosure-chars
   '((:beginning "(" :end ")")
     (:beginning "{" :end "}")
     (:beginning "[" :end "]")
@@ -78,7 +78,7 @@ INPUT-STR the pair type to find"
             (or
              (string= (plist-get item :beginning) input-str)
              (string= (plist-get item :end) input-str)))
-          enclosure--chars))
+          enclosure-chars))
 
 (defun enclosure--add-chars(beg end)
   "Prompts for char to insert and insert at beg and end.
@@ -94,6 +94,7 @@ END End position."
       (goto-char beg)
       (insert beg-symbol))))
 
+;;;###autoload
 (defun enclosure-delete()
   "Delete."
   (interactive)
@@ -111,6 +112,7 @@ END End position."
       (goto-char beg)
       (delete-char len))))
 
+;;;###autoload
 (defun enclosure-change()
   "Change."
   (interactive)
@@ -129,11 +131,13 @@ END End position."
       (delete-char len)
       (enclosure--add-chars beg (- end len len)))))
 
+;;;###autoload
 (defun enclosure-region ()
   "Surrounds the region with the prompted string."
   (interactive)
   (enclosure--add-chars (region-beginning) (region-end)))
 
+;;;###autoload
 (defun enclosure-thing-at-point()
   "Surrounds the 'thing-at-point' with the prompted string."
   (interactive)
