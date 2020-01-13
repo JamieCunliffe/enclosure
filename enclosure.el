@@ -111,6 +111,23 @@ END End position."
       (goto-char beg)
       (delete-char len))))
 
+(defun enclosure-change()
+  "Change."
+  (interactive)
+  (save-excursion
+    (let* ((input-str (read-string "Char: "))
+           (len (length input-str))
+           (pair (enclosure--get-pair input-str))
+           (beg-symbol (if pair (plist-get pair :beginning) input-str))
+           (end-symbol (if pair (plist-get pair :end) input-str))
+           (position (enclosure--find-str-pos-for-pair beg-symbol end-symbol))
+           (beg (car position))
+           (end (car (cdr position))))
+      (goto-char (- end len))
+      (delete-char len)
+      (goto-char beg)
+      (delete-char len)
+      (enclosure--add-chars beg (- end len len)))))
 
 (defun enclosure-region ()
   "Surrounds the region with the prompted string."
@@ -128,4 +145,4 @@ END End position."
       (error "Nothing at point"))))
 
 (provide 'enclosure)
-;;; enclosure.el ends here- 
+;;; enclosure.el ends here
