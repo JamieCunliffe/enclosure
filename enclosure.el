@@ -41,7 +41,27 @@ SYM the symbol to find the previous and next of."
   "Find the start and end positions for beg-sym and and end-sym.
 BEG-SYM The opening symbol to look for
 END-SYM The closing symbol to look for"
-  (error (format "todo for: %s %s" beg-sym end-sym)))
+  (let* ((ctr 0)
+         (start (point))
+         (beg 0)
+         (end 0))
+    (while (not (and (looking-at beg-sym) (= ctr 0)))
+      (if (looking-at end-sym)
+          (setq ctr (+ 1 ctr)))
+      (if (looking-at beg-sym)
+          (setq ctr (- ctr 1)))
+      (backward-char 1))
+    (setq beg (point))
+    (goto-char start)
+    (while (not (and (looking-at end-sym) (= ctr 0)))
+      (if (looking-at beg-sym)
+          (setq ctr (+ 1 ctr)))
+      (if (looking-at end-sym)
+          (setq ctr (- ctr 1)))
+      (forward-char 1))
+    (setq end (+ (point) 1))
+    (list beg end)))
+
 
 (defun enclosure--find-str-pos-for-pair(beg-sym end-sym)
   "Find the start and end of the pair specified.
