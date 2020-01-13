@@ -25,6 +25,31 @@
     (:beginning "[" :end "]")
     (:beginning "<" :end ">")))
 
+(defun enclosure--find-str-pos-same-pair(sym)
+  "Find the start and end for sym.
+SYM the symbol to find the previous and next of."
+  (let* ((beg)
+         (end))
+    (search-backward sym)
+    (setq beg (point))
+    (forward-char)
+    (search-forward sym)
+    (setq end (point))
+    (list beg end)))
+
+(defun enclosure--find-str-pos-diff-pair(beg-sym end-sym)
+  "Find the start and end positions for beg-sym and and end-sym.
+BEG-SYM The opening symbol to look for
+END-SYM The closing symbol to look for"
+  (error (format "todo for: %s %s" beg-sym end-sym)))
+
+(defun enclosure--find-str-pos-for-pair(beg-sym end-sym)
+  "Find the start and end of the pair specified.
+BEG-SYM The opening symbol.
+END-SYM The closing symbol."
+  (if (string= beg-sym end-sym)
+      (enclosure--find-str-pos-same-pair beg-sym)
+    (enclosure--find-str-pos-diff-pair beg-sym end-sym)))
 
 (defun enclosure--get-pair(input-str)
   "Find the pair in the delimiter pair in the list.
@@ -48,6 +73,24 @@ END End position."
       (insert end-symbol)
       (goto-char beg)
       (insert beg-symbol))))
+
+(defun enclosure-delete()
+  "Delete."
+  (interactive)
+  (save-excursion
+    (let* ((input-str (read-string "Char: "))
+           (len (length input-str))
+           (pair (enclosure--get-pair input-str))
+           (beg-symbol (if pair (plist-get pair :beginning) input-str))
+           (end-symbol (if pair (plist-get pair :end) input-str))
+           (position (enclosure--find-str-pos-for-pair beg-symbol end-symbol))
+           (beg (car position))
+           (end (car (cdr position))))
+      (goto-char (- end len))
+      (delete-char len)
+      (goto-char beg)
+      (delete-char len))))
+
 
 (defun enclosure-region ()
   "Surrounds the region with the prompted string."
