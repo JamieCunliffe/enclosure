@@ -4,4 +4,5 @@
 (files "*.el")
 
 (development
- (depends-on "ert-runner"))
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))
