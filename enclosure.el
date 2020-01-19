@@ -1,8 +1,10 @@
-;;; package --- enclosure.el                      -*- lexical-binding: t; -*-
-;;; Commentary:
-; enclosure.el
+;;; enclosure.el --- Adds helpers for working with enclosing pairs                      -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2020 Jamie Cunliffe <jamie.cunliffe@outlook.com>
 ;; Author: Jamie Cunliffe <jamie.cunliffe@outlook.com>
+;; Package-Requires: ((dash "2.14.1"))
 ;; URL: http://github.com/JamieCunliffe/enclosure
+;; Version: 0.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -18,6 +20,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Code:
+(require 'dash)
 
 (defvar enclosure-chars
   '((:beginning "(" :end ")")
