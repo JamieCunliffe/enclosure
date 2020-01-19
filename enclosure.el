@@ -28,6 +28,20 @@
     (:beginning "[" :end "]")
     (:beginning "<" :end ">")))
 
+(defun enclosure--get-add-string()
+  "Prompts the user for the sequence to add."
+  (read-string "Add sequence: "))
+
+(defun enclosure--get-change-string()
+  "Prompts the user for the sequence to change."
+  (let* ((change (read-string "Replace sequence: "))
+         (add (read-string (format "Replace sequence %s with: " change))))
+    (cons change add)))
+
+(defun enclosure--get-delete-string()
+  "Prompts the user for the sequence to delete."
+  (read-string "Delete sequence: "))
+
 (defun enclosure--find-str-pos-same-pair(sym)
   "Find the start and end for sym.
 SYM the symbol to find the previous and next of."
@@ -83,11 +97,11 @@ INPUT-STR the pair type to find"
              (string= (plist-get item :end) input-str)))
           enclosure-chars))
 
-(defun enclosure--add-chars(beg end)
+(defun enclosure--add-chars(beg end &optional input-char)
   "Prompts for char to insert and insert at beg and end.
 BEG Start position.
 END End position."
-  (let* ((input-str (read-string "Char: "))
+  (let* ((input-str (if input-char input-char (enclosure--get-add-string)))
          (pair (enclosure--get-pair input-str))
          (beg-symbol (if pair (plist-get pair :beginning) input-str))
          (end-symbol (if pair (plist-get pair :end) input-str)))
@@ -102,7 +116,7 @@ END End position."
   "Delete."
   (interactive)
   (save-excursion
-    (let* ((input-str (read-string "Char: "))
+    (let* ((input-str (enclosure--get-delete-string))
            (len (length input-str))
            (pair (enclosure--get-pair input-str))
            (beg-symbol (if pair (plist-get pair :beginning) input-str))
@@ -120,11 +134,13 @@ END End position."
   "Change."
   (interactive)
   (save-excursion
-    (let* ((input-str (read-string "Char: "))
-           (len (length input-str))
-           (pair (enclosure--get-pair input-str))
-           (beg-symbol (if pair (plist-get pair :beginning) input-str))
-           (end-symbol (if pair (plist-get pair :end) input-str))
+    (let* ((change-pair (enclosure--get-change-string))
+           (delete-char (car change-pair))
+           (insert-char (cdr change-pair))
+           (len (length delete-char))
+           (pair (enclosure--get-pair delete-char))
+           (beg-symbol (if pair (plist-get pair :beginning) delete-char))
+           (end-symbol (if pair (plist-get pair :end) delete-char))
            (position (enclosure--find-str-pos-for-pair beg-symbol end-symbol))
            (beg (car position))
            (end (car (cdr position))))
@@ -132,7 +148,7 @@ END End position."
       (delete-char len)
       (goto-char beg)
       (delete-char len)
-      (enclosure--add-chars beg (- end len len)))))
+      (enclosure--add-chars beg (- end len len) insert-char))))
 
 ;;;###autoload
 (defun enclosure-region ()
