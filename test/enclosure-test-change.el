@@ -53,3 +53,23 @@
      (goto-char 12)
      (enclosure-change)
      (should (equal (buffer-string) "(this is @some@ text)")))))
+
+(ert-deftest test-change-pair-beg-contains-end()
+  (with-mock
+   (stub enclosure--get-change-string => '("sql\"\"\"" . "|"))
+   (with-temp-buffer
+     (setq-local enclosure-chars (append enclosure-chars '((:beginning "sql\"\"\"" :end "\"\"\""))))
+     (insert "(this is sql\"\"\"some\"\"\" text)")
+     (goto-char 17)
+     (enclosure-change)
+     (should (equal (buffer-string) "(this is |some| text)")))))
+
+(ert-deftest test-change-pair-end-contains-beg()
+  (with-mock
+   (stub enclosure--get-change-string => '("\"\"\"after" . "|"))
+   (with-temp-buffer
+     (setq-local enclosure-chars (append enclosure-chars '((:beginning "\"\"\"" :end "\"\"\"after"))))
+     (insert "(this is \"\"\"some\"\"\"after text)")
+     (goto-char 15)
+     (enclosure-change)
+     (should (equal (buffer-string) "(this is |some| text)")))))

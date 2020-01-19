@@ -48,8 +48,28 @@
   (with-mock
    (stub enclosure--get-delete-string => "&%")
    (with-temp-buffer
-     (setq enclosure-chars (append enclosure-chars '((:beginning "&" :end "&%"))))
+     (setq-local enclosure-chars (append enclosure-chars '((:beginning "&" :end "&%"))))
      (insert "(this is &some&% text)")
      (goto-char 12)
+     (enclosure-delete)
+     (should (equal (buffer-string) "(this is some text)")))))
+
+(ert-deftest test-delete-pair-beg-contains-end()
+  (with-mock
+   (stub enclosure--get-delete-string => "sql\"\"\"")
+   (with-temp-buffer
+     (setq-local enclosure-chars (append enclosure-chars '((:beginning "sql\"\"\"" :end "\"\"\""))))
+     (insert "(this is sql\"\"\"some\"\"\" text)")
+     (goto-char 18)
+     (enclosure-delete)
+     (should (equal (buffer-string) "(this is some text)")))))
+
+(ert-deftest test-delete-pair-end-contains-beg()
+  (with-mock
+   (stub enclosure--get-delete-string => "\"\"\"after")
+   (with-temp-buffer
+     (setq-local enclosure-chars (append enclosure-chars '((:beginning "\"\"\"" :end "\"\"\"after"))))
+     (insert "(this is \"\"\"some\"\"\"after text)")
+     (goto-char 15)
      (enclosure-delete)
      (should (equal (buffer-string) "(this is some text)")))))
